@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PTA – AI-Powered Teaching Feedback</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,900;1,700&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --green:      #12B886;
+      --green-mid:  #0CA678;
+      --green-dark: #087F5B;
+      --green-pale: #E6FCF5;
+      --navy:       #0D1B2A;
+      --ink:        #1A2B3C;
+      --muted:      #8096A7;
+      --subtle:     #B8C9D4;
+      --border:     #E2EBF0;
+      --surface:    #F4F8FB;
+      --white:      #FFFFFF;
+      --red:        #F03E3E;
+      --font:       'Instrument Sans', 'DM Sans', system-ui, sans-serif;
+      --font-d:     'Fraunces', Georgia, serif;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #EFF4F8;
+      font-family: var(--font);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* ── Background ── */
+    .blob1 {
+      position: fixed; top: -150px; right: -110px;
+      width: 580px; height: 580px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(18,184,134,.17) 0%, rgba(18,184,134,.03) 58%, transparent 78%);
+      pointer-events: none; z-index: 0;
+    }
+    .blob2 {
+      position: fixed; bottom: -170px; left: -110px;
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(18,184,134,.09) 0%, transparent 68%);
+      pointer-events: none; z-index: 0;
+    }
+    .dotgrid {
+      position: fixed; inset: 0;
+      background-image: radial-gradient(circle, rgba(18,184,134,.22) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none; z-index: 0;
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 78%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 20%, transparent 78%);
+    }
+
+    /* ── Layout ── */
+    .layout {
+      max-width: 1080px; margin: 0 auto; min-height: 100vh;
+      display: flex; align-items: center;
+      padding: 40px 28px; gap: 56px;
+      position: relative; z-index: 1;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .f1 { animation: fadeUp .5s cubic-bezier(.22,1,.36,1) .04s both; }
+    .f2 { animation: fadeUp .5s cubic-bezier(.22,1,.36,1) .12s both; }
+    .f3 { animation: fadeUp .5s cubic-bezier(.22,1,.36,1) .20s both; }
+    .f4 { animation: fadeUp .5s cubic-bezier(.22,1,.36,1) .28s both; }
+    .f5 { animation: fadeUp .5s cubic-bezier(.22,1,.36,1) .36s both; }
+
+    /* ── Left hero ── */
+    .hero { flex: 0 0 400px; padding-bottom: 24px; }
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 44px; }
+    .logo-icon {
+      width: 38px; height: 38px; border-radius: 11px; font-size: 20px;
+      background: linear-gradient(135deg, var(--green), var(--green-mid));
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(18,184,134,.35);
+    }
+    .logo-name { font-size: 18px; font-weight: 700; color: var(--navy); letter-spacing: -.01em; }
+    .eyebrow {
+      display: inline-flex; align-items: center; gap: 7px;
+      background: var(--green-pale); border: 1px solid rgba(18,184,134,.3);
+      border-radius: 20px; padding: 5px 14px; margin-bottom: 20px;
+    }
+    .eyebrow-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .eyebrow-text { font-size: 11.5px; font-weight: 700; color: var(--green-dark); letter-spacing: .05em; }
+    h1 {
+      font-family: var(--font-d); font-size: 52px; font-weight: 900;
+      line-height: 1.07; color: var(--navy); margin-bottom: 20px; letter-spacing: -.02em;
+    }
+    h1 em { color: var(--green); font-style: italic; }
+    .subtext { font-size: 15.5px; color: var(--muted); line-height: 1.75; margin-bottom: 32px; max-width: 360px; }
+    .badges { display: flex; flex-wrap: wrap; gap: 8px; }
+    .badge {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: white; border: 1px solid var(--border); border-radius: 20px;
+      padding: 6px 14px; font-size: 12.5px; color: var(--muted); font-weight: 500;
+      box-shadow: 0 1px 4px rgba(13,27,42,.05);
+    }
+    .badge-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+
+    /* ── Card ── */
+    .card-wrap { flex: 1; min-width: 0; max-width: 500px; }
+    .card {
+      background: var(--white); border-radius: 20px;
+      box-shadow: 0 12px 48px rgba(13,27,42,.14);
+      border: 1px solid rgba(226,235,240,.8); overflow: hidden;
+    }
+    .card-header {
+      background: linear-gradient(135deg, var(--green-pale) 0%, #F8FEFC 100%);
+      border-bottom: 1px solid rgba(18,184,134,.12); padding: 18px 26px;
+    }
+    .card-header-title { font-size: 12px; font-weight: 700; color: var(--green-dark); letter-spacing: .04em; text-transform: uppercase; }
+    .card-header-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+    .card-body { padding: 22px 26px 26px; }
+
+    /* ── Mode tabs ── */
+    .tabs { display: flex; gap: 7px; margin-bottom: 20px; }
+    .mtab {
+      flex: 1; padding: 11px 10px; border-radius: 10px;
+      border: 1.5px solid var(--border); background: var(--white);
+      color: var(--muted); font-size: 13px; font-weight: 600;
+      font-family: var(--font); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: all .2s ease;
+    }
+    .mtab:hover { border-color: var(--green); color: var(--green-dark); }
+    .mtab.on {
+      border-color: var(--green); background: var(--green-pale); color: var(--green-dark);
+      box-shadow: 0 0 0 3px rgba(18,184,134,.13);
+    }
+
+    /* ── Drop zone ── */
+    .dz {
+      border: 2px dashed var(--border); border-radius: 14px; padding: 34px 20px;
+      text-align: center; cursor: pointer; background: var(--surface);
+      transition: all .22s ease; margin-bottom: 18px;
+    }
+    .dz:hover, .dz.over { border-color: var(--green); background: var(--green-pale); }
+    .dz.filled { border-style: solid; border-color: var(--green); background: var(--green-pale); }
+    .dz-icon {
+      width: 48px; height: 48px; border-radius: 12px; margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center; font-size: 20px;
+    }
+    .dz-title { font-size: 14px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+    .dz-sub { font-size: 12.5px; color: var(--muted); }
+    .dz-sub span { color: var(--green); font-weight: 600; }
+
+    /* ── Camera / video ── */
+    .viewport {
+      position: relative; border-radius: 14px; overflow: hidden;
+      background: var(--navy); aspect-ratio: 16/9; margin-bottom: 14px;
+    }
+    .vp { width: 100%; height: 100%; display: block; object-fit: cover; }
+    .vp-placeholder {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px;
+      background: linear-gradient(135deg, #0D1B2A 0%, #172A40 100%);
+    }
+    .vp-placeholder-icon { font-size: 38px; opacity: .3; }
+    .vp-placeholder-text { font-size: 13px; color: rgba(255,255,255,.32); font-weight: 500; }
+    .vp-error {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 10px; padding: 24px;
+      background: linear-gradient(135deg, #1A0808, #2D1010);
+    }
+    .vp-error-text { font-size: 13px; color: rgba(255,120,120,.9); text-align: center; line-height: 1.55; }
+    .rec-badge {
+      position: absolute; top: 10px; left: 10px;
+      display: flex; align-items: center; gap: 7px;
+      background: rgba(0,0,0,.62); backdrop-filter: blur(6px);
+      border-radius: 20px; padding: 5px 12px;
+    }
+    .done-badge {
+      position: absolute; top: 10px; left: 10px;
+      display: flex; align-items: center; gap: 6px;
+      background: rgba(18,184,134,.84); backdrop-filter: blur(6px);
+      border-radius: 20px; padding: 5px 12px;
+      font-size: 12px; font-weight: 700; color: white;
+    }
+
+    @keyframes pulse-ring { 0% { transform: scale(1); opacity: .8; } 70%, 100% { transform: scale(1.65); opacity: 0; } }
+    @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .2; } }
+    .recdot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: var(--red); flex-shrink: 0; position: relative;
+      animation: blink 1.1s ease-in-out infinite;
+    }
+    .recdot::before {
+      content: ''; position: absolute; inset: -4px; border-radius: 50%;
+      border: 2px solid var(--red); animation: pulse-ring 1.4s ease-out infinite;
+    }
+    .rec-timer { font-size: 13px; font-weight: 700; color: white; font-family: monospace; letter-spacing: .08em; }
+
+    /* ── Record controls ── */
+    .controls {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 14px; min-height: 52px;
+    }
+    .rbtn {
+      width: 62px; height: 62px; border-radius: 50%; border: none;
+      cursor: pointer; transition: all .2s ease;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .rbtn:hover { transform: scale(1.07); }
+    .rbtn:active { transform: scale(.94); }
+    .rbtn-open { background: var(--green-pale); font-size: 22px; }
+    .rbtn-rec { background: var(--red); box-shadow: 0 6px 20px rgba(240,62,62,.42); }
+    .rbtn-stop { background: var(--red); box-shadow: 0 6px 20px rgba(240,62,62,.42); }
+    .rbtn-inner-circle { width: 22px; height: 22px; border-radius: 50%; background: white; }
+    .rbtn-inner-square { width: 20px; height: 20px; border-radius: 4px; background: white; }
+    .ctrl-label { font-size: 13px; color: var(--muted); font-weight: 500; }
+    .ctrl-label-red { font-size: 13px; color: var(--red); font-weight: 700; }
+    .ctrl-label-green { font-size: 13px; color: var(--green); font-weight: 700; }
+    .tip-box {
+      background: var(--surface); border-radius: 10px; padding: 10px 14px;
+      font-size: 12px; color: var(--muted); line-height: 1.65; margin-bottom: 4px;
+      display: flex; gap: 7px; align-items: flex-start;
+    }
+
+    /* ── Transcript mode ── */
+    textarea {
+      width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 12px; padding: 13px 15px; color: var(--ink); font-size: 14px;
+      font-family: var(--font); line-height: 1.75; resize: vertical; margin-bottom: 14px;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    textarea:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(18,184,134,.12); }
+    .dur-row { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .dur-label { font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+    .dur-input {
+      width: 86px; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 8px 12px; color: var(--ink); font-size: 14px;
+      font-family: var(--font); transition: border-color .2s, box-shadow .2s;
+    }
+    .dur-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(18,184,134,.12); }
+    .word-count { font-size: 12px; color: var(--muted); margin-left: auto; }
+
+    /* ── API Key ── */
+    .key-section { margin-bottom: 18px; }
+    .key-label {
+      font-size: 11.5px; font-weight: 600; color: var(--muted); letter-spacing: .04em;
+      text-transform: uppercase; display: flex; align-items: center; gap: 6px; margin-bottom: 8px;
+    }
+    .key-badge {
+      background: var(--green-pale); color: var(--green-dark);
+      font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 20px;
+    }
+    .key-wrap { position: relative; }
+    .key-input {
+      width: 100%; background: var(--surface); border: 1.5px solid var(--border);
+      border-radius: 10px; padding: 11px 44px 11px 14px; color: var(--ink);
+      font-size: 14px; font-family: var(--font);
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .key-input:focus { outline: none; border-color: var(--green); box-shadow: 0 0 0 4px rgba(18,184,134,.12); }
+    .key-toggle {
+      position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; font-size: 15px;
+      color: var(--subtle); padding: 4px; border-radius: 4px;
+    }
+    .key-hint {
+      margin-top: 7px; font-size: 12px; color: var(--muted); line-height: 1.6;
+      display: flex; align-items: flex-start; gap: 6px;
+    }
+    .key-hint a { color: var(--green); font-weight: 600; margin-left: 5px; text-decoration: none; }
+
+    /* ── Pipeline steps ── */
+    .pipeline {
+      background: var(--surface); border-radius: 10px; padding: 11px 16px;
+      display: flex; align-items: center; margin-bottom: 20px;
+    }
+    .step { display: flex; align-items: center; flex: 1; }
+    .step-inner { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--muted); }
+    .snum {
+      width: 22px; height: 22px; border-radius: 50%;
+      background: var(--green-pale); color: var(--green-dark);
+      font-size: 11px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .sline { flex: 1; height: 1.5px; background: var(--border); margin: 0 8px; }
+
+    /* ── CTA ── */
+    .cta {
+      width: 100%; padding: 15px 24px; border-radius: 12px; border: none;
+      font-family: var(--font); font-size: 15px; font-weight: 700;
+      cursor: pointer; transition: all .22s ease; letter-spacing: .01em;
+    }
+    .cta.on {
+      background: linear-gradient(135deg, var(--green) 0%, var(--green-mid) 100%);
+      color: white; box-shadow: 0 6px 24px rgba(18,184,134,.38);
+    }
+    .cta.on:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(18,184,134,.48); }
+    .cta.on:active { transform: translateY(0); }
+    .cta.off { background: var(--surface); color: var(--subtle); border: 1.5px solid var(--border); cursor: default; }
+    .footer-note { text-align: center; margin-top: 12px; font-size: 12px; color: var(--subtle); }
+
+    /* ── Ghost button ── */
+    .gbtn {
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px;
+      padding: 9px 18px; font-size: 13px; font-weight: 600; color: var(--muted);
+      cursor: pointer; font-family: var(--font); transition: all .15s;
+    }
+    .gbtn:hover { border-color: var(--green); color: var(--green-dark); }
+
+    /* ── Hidden utility ── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+
+  <div class="dotgrid"></div>
+  <div class="blob1"></div>
+  <div class="blob2"></div>
+
+  <div class="layout">
+
+    <!-- ── LEFT: Hero ─────────────────────────────────────────────── -->
+    <div class="hero">
+      <div class="logo f1">
+        <div class="logo-icon">🎓</div>
+        <span class="logo-name">PTA</span>
+      </div>
+
+      <div class="eyebrow f2">
+        <div class="eyebrow-dot"></div>
+        <span class="eyebrow-text">AI-POWERED TEACHING FEEDBACK</span>
+      </div>
+
+      <h1 class="f3">
+        Get instant<br>
+        <em>feedback</em><br>
+        on your<br>teaching.
+      </h1>
+
+      <p class="subtext f4">
+        Upload a video, record directly from your camera, or paste a transcript to analyze filler words, vocabulary level, and scaffolding quality.
+      </p>
+
+      <div class="badges f5">
+        <div class="badge"><div class="badge-dot"></div>Filler detection</div>
+        <div class="badge"><div class="badge-dot"></div>Vocab levels</div>
+        <div class="badge"><div class="badge-dot"></div>Instruction clarity</div>
+        <div class="badge"><div class="badge-dot"></div>AI scaffolding</div>
+      </div>
+    </div>
+
+    <!-- ── RIGHT: Card ─────────────────────────────────────────────── -->
+    <div class="card-wrap f3">
+      <div class="card">
+
+        <div class="card-header">
+          <div class="card-header-title">Analyze a lesson</div>
+          <div class="card-header-sub">Choose your input method below</div>
+        </div>
+
+        <div class="card-body">
+
+          <!-- Mode tabs -->
+          <div class="tabs">
+            <button class="mtab on" data-mode="upload" onclick="switchMode('upload')">
+              <span style="font-size:15px">📁</span> Upload
+            </button>
+            <button class="mtab" data-mode="record" onclick="switchMode('record')">
+              <span style="font-size:15px">🔴</span> Record
+            </button>
+            <button class="mtab" data-mode="text" onclick="switchMode('text')">
+              <span style="font-size:15px">📝</span> Transcript
+            </button>
+          </div>
+
+          <!-- ── UPLOAD panel ── -->
+          <div id="panel-upload">
+            <div id="dropzone" class="dz"
+              onclick="document.getElementById('file-input').click()"
+              ondragover="event.preventDefault(); this.classList.add('over')"
+              ondragleave="this.classList.remove('over')"
+              ondrop="handleDrop(event)">
+              <input id="file-input" type="file" accept="video/*" class="hidden"
+                onchange="handleFileSelect(this.files[0])">
+              <div id="dz-empty">
+                <div class="dz-icon" style="background:var(--surface);border:1.5px dashed var(--border)">📁</div>
+                <div class="dz-title">Drop your video here</div>
+                <div class="dz-sub">or <span>click to browse</span> · MP4, MOV, WebM</div>
+              </div>
+              <div id="dz-filled" class="hidden">
+                <div class="dz-icon" style="background:var(--green);box-shadow:0 4px 14px rgba(18,184,134,.35)">🎬</div>
+                <div class="dz-title" id="dz-filename">filename.mp4</div>
+                <div class="dz-sub" id="dz-filesize">0 MB · <span>click to change</span></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ── RECORD panel ── -->
+          <div id="panel-record" class="hidden">
+            <div class="viewport">
+              <video id="preview-video" class="vp hidden" muted playsinline></video>
+              <video id="playback-video" class="vp hidden" controls></video>
+
+              <div id="vp-idle" class="vp-placeholder">
+                <div class="vp-placeholder-icon">📷</div>
+                <div class="vp-placeholder-text">Click the button below to open camera</div>
+              </div>
+              <div id="vp-error" class="vp-error hidden">
+                <div style="font-size:28px">⚠️</div>
+                <div class="vp-error-text" id="rec-error-text"></div>
+              </div>
+              <div id="rec-badge" class="rec-badge hidden">
+                <div class="recdot"></div>
+                <span class="rec-timer" id="rec-timer">00:00</span>
+              </div>
+              <div id="done-badge" class="done-badge hidden">
+                ✓ <span id="done-duration">00:00</span> recorded
+              </div>
+            </div>
+
+            <div class="controls">
+              <div id="ctrl-idle" style="display:flex;align-items:center;gap:16px">
+                <button class="rbtn rbtn-open" onclick="startPreview()">📷</button>
+                <span class="ctrl-label">Open camera to start</span>
+              </div>
+              <div id="ctrl-preview" class="hidden" style="display:none;align-items:center;gap:16px">
+                <span class="ctrl-label">Camera ready</span>
+                <button class="rbtn rbtn-rec" onclick="startRecording()">
+                  <div class="rbtn-inner-circle"></div>
+                </button>
+                <span class="ctrl-label">Tap to record</span>
+              </div>
+              <div id="ctrl-recording" class="hidden" style="display:none;align-items:center;gap:16px">
+                <span class="ctrl-label-red">Recording in progress…</span>
+                <button class="rbtn rbtn-stop" onclick="stopRecording()">
+                  <div class="rbtn-inner-square"></div>
+                </button>
+                <span class="ctrl-label">Tap to stop</span>
+              </div>
+              <div id="ctrl-done" class="hidden" style="display:none;align-items:center;gap:16px">
+                <button class="gbtn" onclick="discardRecording()">↺ Re-record</button>
+                <span class="ctrl-label-green">✓ Ready to analyze</span>
+              </div>
+              <div id="ctrl-error" class="hidden" style="display:none;align-items:center;gap:16px">
+                <button class="gbtn" onclick="setRecState('idle')">Try again</button>
+              </div>
+            </div>
+
+            <div id="rec-tip" class="tip-box">
+              <span style="color:var(--green);flex-shrink:0">💡</span>
+              <span>Make sure your <strong style="color:var(--ink)">microphone is unobstructed</strong> and you're in a quiet space. Recording stays in your browser — nothing uploads until you click Analyze.</span>
+            </div>
+          </div>
+
+          <!-- ── TRANSCRIPT panel ── -->
+          <div id="panel-text" class="hidden">
+            <textarea id="transcript-input" rows="8"
+              placeholder="Paste your classroom teaching transcript here…&#10;&#10;e.g. 'Okay class, today we're going to look at…'"
+              oninput="updateWordCount(); updateCTA()"></textarea>
+            <div class="dur-row">
+              <label class="dur-label">Duration (min)</label>
+              <input type="number" class="dur-input" id="duration-input" value="10" min="1" max="180">
+              <span class="word-count" id="word-count" style="display:none"></span>
+            </div>
+          </div>
+
+          <!-- API Key (upload + record) -->
+          <div id="key-section" class="key-section">
+            <label class="key-label">
+              OpenAI API Key
+              <span class="key-badge">REQUIRED</span>
+            </label>
+            <div class="key-wrap">
+              <input type="password" class="key-input" id="api-key-input"
+                placeholder="sk-proj-…" oninput="updateCTA()">
+              <button class="key-toggle" onclick="toggleKeyVisibility()" id="key-toggle-btn">👁️</button>
+            </div>
+            <div class="key-hint">
+              <span style="color:var(--green);flex-shrink:0;margin-top:1px">🔒</span>
+              <span>
+                Used only in your browser session — never stored.
+                <a href="https://platform.openai.com/api-keys" target="_blank" rel="noreferrer">Get a key →</a>
+              </span>
+            </div>
+          </div>
+
+          <!-- Pipeline steps -->
+          <div id="pipeline" class="pipeline">
+            <div class="step">
+              <div class="step-inner"><div class="snum">1</div><span>Extract</span></div>
+              <div class="sline"></div>
+            </div>
+            <div class="step">
+              <div class="step-inner"><div class="snum">2</div><span>Transcribe</span></div>
+              <div class="sline"></div>
+            </div>
+            <div class="step">
+              <div class="step-inner"><div class="snum">3</div><span>Analyze</span></div>
+            </div>
+          </div>
+
+          <!-- CTA -->
+          <button class="cta off" id="cta-btn">Select a video to continue</button>
+          <div class="footer-note">Powered by OpenAI Whisper + Claude AI · No data stored</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ── State ──────────────────────────────────────────────────────────────────
+  let mode      = 'upload';
+  let videoFile = null;
+  let recState  = 'idle';
+  let recError  = '';
+  let recordedFile = null;
+  let recordedURL  = null;
+  let stream    = null;
+  let recorder  = null;
+  let chunks    = [];
+  let timerInterval = null;
+  let timerSecs = 0;
+  let showKey   = false;
+
+  // ── Mode switching ─────────────────────────────────────────────────────────
+  function switchMode(m) {
+    mode = m;
+    document.querySelectorAll('.mtab').forEach(t => t.classList.toggle('on', t.dataset.mode === m));
+    document.getElementById('panel-upload').classList.toggle('hidden', m !== 'upload');
+    document.getElementById('panel-record').classList.toggle('hidden', m !== 'record');
+    document.getElementById('panel-text').classList.toggle('hidden', m !== 'text');
+    document.getElementById('key-section').classList.toggle('hidden', m === 'text');
+    document.getElementById('pipeline').classList.toggle('hidden', m === 'text');
+    if (m !== 'record' && recState !== 'idle' && recState !== 'done') {
+      stopStream(); setRecState('idle');
+    }
+    updateCTA();
+  }
+
+  // ── Upload ─────────────────────────────────────────────────────────────────
+  function handleDrop(e) {
+    e.preventDefault();
+    document.getElementById('dropzone').classList.remove('over');
+    const f = e.dataTransfer.files[0];
+    if (f && f.type.startsWith('video/')) handleFileSelect(f);
+  }
+
+  function handleFileSelect(f) {
+    if (!f) return;
+    videoFile = f;
+    document.getElementById('dz-empty').classList.add('hidden');
+    document.getElementById('dz-filled').classList.remove('hidden');
+    document.getElementById('dropzone').classList.add('filled');
+    const name = f.name.length > 38 ? f.name.slice(0, 35) + '…' : f.name;
+    document.getElementById('dz-filename').textContent = name;
+    document.getElementById('dz-filesize').innerHTML = `${(f.size/1024/1024).toFixed(1)} MB · <span>click to change</span>`;
+    updateCTA();
+  }
+
+  // ── Recording ──────────────────────────────────────────────────────────────
+  function setRecState(s) {
+    recState = s;
+    const ids = ['idle','preview','recording','done','error'];
+    ids.forEach(id => {
+      const el = document.getElementById('ctrl-' + id);
+      if (el) { el.classList.toggle('hidden', id !== s); el.style.display = id === s ? 'flex' : 'none'; }
+    });
+    document.getElementById('vp-idle').classList.toggle('hidden', s !== 'idle');
+    document.getElementById('vp-error').classList.toggle('hidden', s !== 'error');
+    document.getElementById('rec-badge').classList.toggle('hidden', s !== 'recording');
+    document.getElementById('done-badge').classList.toggle('hidden', s !== 'done');
+    document.getElementById('rec-tip').classList.toggle('hidden', s !== 'idle' && s !== 'preview');
+    const pv = document.getElementById('preview-video');
+    const pb = document.getElementById('playback-video');
+    pv.classList.toggle('hidden', s !== 'preview' && s !== 'recording');
+    pb.classList.toggle('hidden', s !== 'done');
+    if (s === 'error') document.getElementById('rec-error-text').textContent = recError;
+    updateCTA();
+  }
+
+  async function startPreview() {
+    recError = '';
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      const pv = document.getElementById('preview-video');
+      pv.srcObject = stream; pv.play();
+      setRecState('preview');
+    } catch(e) {
+      recError = e.name === 'NotAllowedError'
+        ? 'Camera/microphone permission denied. Allow access in your browser settings and try again.'
+        : 'Could not access camera: ' + e.message;
+      setRecState('error');
+    }
+  }
+
+  function startRecording() {
+    chunks = []; timerSecs = 0;
+    const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus'
+      : MediaRecorder.isTypeSupported('video/webm') ? 'video/webm' : 'video/mp4';
+    recorder = new MediaRecorder(stream, { mimeType });
+    recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+    recorder.onstop = () => {
+      const blob = new Blob(chunks, { type: mimeType });
+      const ext  = mimeType.includes('mp4') ? 'mp4' : 'webm';
+      recordedFile = new File([blob], `lesson.${ext}`, { type: mimeType });
+      if (recordedURL) URL.revokeObjectURL(recordedURL);
+      recordedURL = URL.createObjectURL(blob);
+      document.getElementById('playback-video').src = recordedURL;
+      const mm = String(Math.floor(timerSecs/60)).padStart(2,'0');
+      const ss = String(timerSecs%60).padStart(2,'0');
+      document.getElementById('done-duration').textContent = `${mm}:${ss}`;
+      stopStream(); setRecState('done');
+    };
+    recorder.start(250);
+    timerInterval = setInterval(() => {
+      timerSecs++;
+      const mm = String(Math.floor(timerSecs/60)).padStart(2,'0');
+      const ss = String(timerSecs%60).padStart(2,'0');
+      document.getElementById('rec-timer').textContent = `${mm}:${ss}`;
+    }, 1000);
+    setRecState('recording');
+  }
+
+  function stopRecording() { clearInterval(timerInterval); recorder?.stop(); }
+
+  function discardRecording() {
+    if (recordedURL) { URL.revokeObjectURL(recordedURL); recordedURL = null; }
+    recordedFile = null; setRecState('idle');
+  }
+
+  function stopStream() {
+    stream?.getTracks().forEach(t => t.stop()); stream = null;
+  }
+
+  // ── Key visibility ─────────────────────────────────────────────────────────
+  function toggleKeyVisibility() {
+    showKey = !showKey;
+    const inp = document.getElementById('api-key-input');
+    inp.type = showKey ? 'text' : 'password';
+    document.getElementById('key-toggle-btn').textContent = showKey ? '🙈' : '👁️';
+  }
+
+  // ── Word count ─────────────────────────────────────────────────────────────
+  function updateWordCount() {
+    const txt = document.getElementById('transcript-input').value.trim();
+    const wc  = document.getElementById('word-count');
+    if (txt.length > 0) {
+      wc.style.display = 'block';
+      wc.textContent = txt.split(/\s+/).length + ' words';
+    } else {
+      wc.style.display = 'none';
+    }
+  }
+
+  // ── CTA update ─────────────────────────────────────────────────────────────
+  function updateCTA() {
+    const btn     = document.getElementById('cta-btn');
+    const key     = document.getElementById('api-key-input').value.trim();
+    const txt     = document.getElementById('transcript-input').value.trim();
+    const activeFile = mode === 'upload' ? videoFile : recordedFile;
+    let canGo = false, label = '';
+
+    if (mode === 'text') {
+      canGo = txt.length > 50;
+      label = canGo ? 'Analyze Transcript →' : 'Paste a transcript to continue';
+    } else if (mode === 'upload') {
+      canGo = !!(videoFile && key.length > 10);
+      label = !videoFile ? 'Select a video to continue'
+            : !key       ? 'Enter your API key to continue'
+            : '🎬  Extract, Transcribe & Analyze';
+    } else {
+      canGo = !!(recordedFile && key.length > 10);
+      label = recState !== 'done' ? 'Record your lesson first'
+            : !key                ? 'Enter your API key to continue'
+            : '🎙  Transcribe & Analyze Recording';
+    }
+
+    btn.textContent = label;
+    btn.className = 'cta ' + (canGo ? 'on' : 'off');
+  }
+
+  // ── Init ───────────────────────────────────────────────────────────────────
+  updateCTA();
+  window.addEventListener('beforeunload', () => stopStream());
+</script>
+</body>
+</html>
