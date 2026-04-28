@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Teaching Analysis Report</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f5f4ef; color: #2c2c2a; padding: 32px 24px;
+  }
+  h1   { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  h2   { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
+  .meta-line { font-size: 13px; color: #6b6a63; margin-bottom: 16px; }
+  .note      { color: #999; }
+
+  /* Cards */
+  .cards { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
+  .card  {
+    flex:1; min-width:130px; background:#fff;
+    border-radius:12px; padding:18px 20px; border:1px solid #e2e0d8;
+  }
+  .card-val  { font-size:28px; font-weight:700; line-height:1; }
+  .card-unit { font-size:14px; font-weight:400; margin-left:3px; }
+  .card-sub  { font-size:12px; color:#6b6a63; margin-top:4px; }
+
+  /* Transcript */
+  .transcript-box {
+    background:#fff; border:1px solid #e2e0d8;
+    border-radius:12px; padding:16px 20px; margin-bottom:28px;
+  }
+  .transcript-box summary {
+    cursor:pointer; font-size:13px; font-weight:600; color:#6b6a63;
+  }
+  .transcript-text {
+    font-size:13px; line-height:1.8; color:#3d3d3a;
+    margin-top:12px; white-space:pre-wrap;
+  }
+
+  /* Sections */
+  .section {
+    background:#fff; border-radius:14px;
+    padding:24px 28px; margin-bottom:20px;
+    border:1px solid #e2e0d8;
+  }
+
+  /* Badge */
+  .badge {
+    display:inline-block; background:#eef4fb; color:#185FA5;
+    border-radius:6px; padding:3px 10px; font-size:12px;
+    font-weight:600; margin-bottom:14px;
+  }
+  .flag { font-size:12px; color:#854F0B; margin-left:10px; }
+
+  /* Stacked bar */
+  .stack-bar {
+    display:flex; height:18px; border-radius:6px;
+    overflow:hidden; margin-bottom:10px;
+  }
+  .stack-seg { height:100%; transition:width .3s; }
+
+  /* Legend */
+  .legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:14px; align-items:center; }
+  .legend-dot   { display:inline-block; width:10px; height:10px; border-radius:50%; }
+  .legend-label { font-size:12px; color:#3d3d3a; margin-left:4px; }
+  .legend-pct   { font-size:12px; color:#6b6a63; margin-left:4px; }
+
+  /* Chips */
+  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
+  .chip  {
+    background:#f0f0eb; border-radius:6px;
+    padding:3px 9px; font-size:12px; color:#3d3d3a;
+  }
+  .chip em { color:#6b6a63; font-style:normal; }
+
+  /* Bar chart */
+  .bar-row   { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
+  .bar-label { font-size:12px; width:180px; flex-shrink:0; color:#3d3d3a; }
+  .bar-track { flex:1; background:#f0f0eb; border-radius:4px; height:10px; }
+  .bar-fill  { height:100%; border-radius:4px; }
+  .fill-teal { background:#1D9E75; }
+  .bar-count { font-size:12px; color:#6b6a63; width:24px; text-align:right; }
+
+  /* Findings */
+  .two-col  { display:flex; gap:16px; margin-bottom:16px; }
+  .two-col > div { flex:1; }
+  .col-label {
+    font-size:11px; font-weight:600; color:#6b6a63;
+    text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;
+  }
+  .finding         { padding:10px 14px; border-radius:8px; margin-bottom:8px; font-size:13px; }
+  .strength        { background:#f0faf5; border-left:3px solid #1D9E75; }
+  .growth          { background:#fdf6ee; border-left:3px solid #BA7517; }
+  .finding-point   { font-weight:500; margin-bottom:4px; }
+  .finding-evidence { font-size:12px; }
+  .evidence      { color:#6b6a63; font-style:italic; }
+  .evidence-null { color:#aaa; font-style:italic; }
+  .summary-text  { font-size:14px; line-height:1.7; color:#3d3d3a; margin-bottom:18px; }
+  .model-tag     { font-size:12px; font-weight:400; color:#6b6a63; }
+  .standout      {
+    background:#eef4fb; border-radius:8px; padding:12px 16px;
+    font-size:13px; color:#185FA5; margin-top:16px;
+    border-left:3px solid #185FA5;
+  }
+</style>
+</head>
+<body>
+  <h1>Teaching Analysis Report</h1>
+  <p class="meta-line">/content/drive/MyDrive/Colab Notebooks/Copy of yuxin.mp4</p>
+
+  
+<div class="cards">
+  <div class="card">
+    <div class="card-val">1.1<span class="card-unit">min</span></div>
+    <div class="card-sub">Duration</div>
+  </div>
+  <div class="card">
+    <div class="card-val">171</div>
+    <div class="card-sub">Total words</div>
+  </div>
+  <div class="card">
+    <div class="card-val">153.1<span class="card-unit">wpm</span></div>
+    <div class="card-sub">Speech rate</div>
+  </div>
+</div>
+<details class="transcript-box">
+  <summary>📄 View transcript</summary>
+  <p class="transcript-text">Hi, class. Welcome to our Community Impact Program again. And today is our week six. We're going to talk about lesson two. While we're still waiting for more people to join us, why don't we start with our agenda? We'll first review what we just learned from yesterday. Since I was not here, I'd like to have someone in the class to help me review what we learned. And the second thing we're going to go over is about the pronunciation. The concept we'll learn is called syllable. And I hope you will still remember that. And later, we will talk more about the grammar concepts. Entitled with Strympic, Figure, and Biggest. And at very end of this class today, we are going to have a good discussion. All right, why don't we start with these two tables? I will give you two minutes to read this table. And later, let's discuss as a whole class. And tell me, would you notice about this two groups? And how are they different?</p>
+</details>
+
+  
+<div class="section">
+  <h2>① Vocabulary level</h2>
+  <div class="badge">Suitable for B1/B2</div>
+  <div class="stack-bar"><div class="stack-seg" style="width:12.2%;background:#00BCD4" title="A1/A2  (basic): 12.2%"></div><div class="stack-seg" style="width:62.2%;background:#4CAF50" title="B1/B2  (intermediate): 62.2%"></div><div class="stack-seg" style="width:22.0%;background:#FDD835" title="C1     (advanced): 22.0%"></div><div class="stack-seg" style="width:3.7%;background:#FBC02D" title="C2+    (very advanced): 3.7%"></div></div>
+  <div class="legend"><span class="legend-dot" style="background:#00BCD4"></span><span class="legend-label">A1/A2  (basic)</span><span class="legend-pct">12.2%</span><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-label">B1/B2  (intermediate)</span><span class="legend-pct">62.2%</span><span class="legend-dot" style="background:#FDD835"></span><span class="legend-label">C1     (advanced)</span><span class="legend-pct">22.0%</span><span class="legend-dot" style="background:#FBC02D"></span><span class="legend-label">C2+    (very advanced)</span><span class="legend-pct">3.7%</span></div>
+  <div class="chips"><span class="chip">syllable <em>×1</em></span><span class="chip">pronunciation <em>×1</em></span><span class="chip">strympic <em>×1</em></span></div>
+</div>
+
+  
+<div class="section">
+  <h2>② Instruction phrases</h2>
+  <p class="meta-line">
+    4 total &nbsp;·&nbsp;
+    3.58 per min &nbsp;·&nbsp;
+    <span class="note">Benchmark: ~2–4/min</span>
+  </p>
+  
+    <div class="bar-row">
+      <span class="bar-label">Let's…</span>
+      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
+      <span class="bar-count">1</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">First…</span>
+      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
+      <span class="bar-count">1</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Second(ly)…</span>
+      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
+      <span class="bar-count">1</span>
+    </div>
+    <div class="bar-row">
+      <span class="bar-label">Remember to/that…</span>
+      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
+      <span class="bar-count">1</span>
+    </div>
+</div>
+
+  
+<div class="section">
+  <h2>③ Teacher emotion (DeepFace)</h2>
+  <div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap">
+    <svg width="240" height="240" viewBox="0 0 240 240"><path d="M120,120 L120.0,20.0 A100,100 0 1,1 52.0,193.3 Z" fill="#5C6BC0" /><path d="M120,120 L52.0,193.3 A100,100 0 0,1 49.7,48.8 Z" fill="#90A4AE" /><path d="M120,120 L49.7,48.8 A100,100 0 0,1 77.4,29.5 Z" fill="#AB47BC" /><path d="M120,120 L77.4,29.5 A100,100 0 0,1 109.3,20.6 Z" fill="#EF5350" /><path d="M120,120 L109.3,20.6 A100,100 0 0,1 118.1,20.0 Z" fill="#4CAF50" /><path d="M120,120 L118.1,20.0 A100,100 0 0,1 119.4,20.0 Z" fill="#FDD835" /><path d="M120,120 L119.4,20.0 A100,100 0 0,1 120.0,20.0 Z" fill="#8D6E63" /></svg>
+    <div class="legend"><span class="legend-dot" style="background:#5C6BC0"></span><span class="legend-label">sad</span><span class="legend-pct">61.9%</span><span class="legend-dot" style="background:#90A4AE"></span><span class="legend-label">neutral</span><span class="legend-pct">25.7%</span><span class="legend-dot" style="background:#AB47BC"></span><span class="legend-label">fear</span><span class="legend-pct">5.4%</span><span class="legend-dot" style="background:#EF5350"></span><span class="legend-label">angry</span><span class="legend-pct">5.3%</span><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-label">happy</span><span class="legend-pct">1.4%</span><span class="legend-dot" style="background:#FDD835"></span><span class="legend-label">surprise</span><span class="legend-pct">0.2%</span><span class="legend-dot" style="background:#8D6E63"></span><span class="legend-label">disgust</span><span class="legend-pct">0.1%</span></div>
+  </div>
+</div>
+
+  
+<div class="section">
+  <h2>④ Scaffolding quality &nbsp;<span class="model-tag">Qwen2.5-7B</span></h2>
+  <p class="summary-text">The teacher introduces the topic logically but lacks clear sequencing and worked examples.</p>
+  <div class="two-col">
+    <div>
+      <div class="col-label">Strengths</div>
+      <div class="finding strength">
+        <div class="finding-point">✓ Introduction of the topic</div>
+        <div class="finding-evidence"><span class="evidence">"Okay, this is today's topic. Learning for life."</span></div>
+      </div>
+      <div class="finding strength">
+        <div class="finding-point">✓ Setting time limit</div>
+        <div class="finding-evidence"><span class="evidence">"Two minutes, let's start."</span></div>
+      </div>
+    </div>
+    <div>
+      <div class="col-label">Areas for growth</div>
+      <div class="finding growth">
+        <div class="finding-point">△ Lack of sequencing</div>
+        <div class="finding-evidence"><span class="evidence">"The introduction of predicting the main idea and the logic of the passage without prior knowledge connection."</span></div>
+      </div>
+      <div class="finding growth">
+        <div class="finding-point">△ Need for modeled examples</div>
+        <div class="finding-evidence"><span class="evidence">"No worked examples or modeling of how to approach the task was observed."</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="standout">⭐ Standout moment — The teacher setting a two-minute timer for the activity could help manage time effectively.</div>
+</div>
+
+
+</body>
+</html>
