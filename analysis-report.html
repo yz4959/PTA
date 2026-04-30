@@ -4,210 +4,511 @@
 <meta charset="utf-8">
 <title>Teaching Analysis Report</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-    background: #f5f4ef; color: #2c2c2a; padding: 32px 24px;
-  }
-  h1   { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
-  h2   { font-size: 16px; font-weight: 600; margin-bottom: 14px; }
-  .meta-line { font-size: 13px; color: #6b6a63; margin-bottom: 16px; }
-  .note      { color: #999; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  /* Cards */
-  .cards { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:20px; }
-  .card  {
-    flex:1; min-width:130px; background:#fff;
-    border-radius:12px; padding:18px 20px; border:1px solid #e2e0d8;
+  :root {
+    --bg: #f5f4ef;
+    --surface: #ffffff;
+    --border: rgba(44,44,42,0.12);
+    --border-med: rgba(44,44,42,0.22);
+    --text-primary: #2c2c2a;
+    --text-secondary: #6b6a63;
+    --text-hint: #9b9a93;
+    --teal-50: #E1F5EE;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --amber-50: #FAEEDA;
+    --amber-600: #854F0B;
+    --amber-800: #633806;
+    --blue-50: #E6F1FB;
+    --blue-600: #185FA5;
+    --blue-800: #0C447C;
+    --gray-100: #D3D1C7;
+    --gray-200: #B4B2A9;
+    --gray-600: #5F5E5A;
   }
-  .card-val  { font-size:28px; font-weight:700; line-height:1; }
-  .card-unit { font-size:14px; font-weight:400; margin-left:3px; }
-  .card-sub  { font-size:12px; color:#6b6a63; margin-top:4px; }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a18;
+      --surface: #252523;
+      --border: rgba(255,255,255,0.1);
+      --border-med: rgba(255,255,255,0.18);
+      --text-primary: #e8e7e0;
+      --text-secondary: #a0a097;
+      --text-hint: #6b6a63;
+      --teal-50: #04342C;
+      --teal-600: #5DCAA5;
+      --teal-800: #9FE1CB;
+      --amber-50: #412402;
+      --amber-600: #EF9F27;
+      --amber-800: #FAC775;
+      --blue-50: #042C53;
+      --blue-600: #378ADD;
+      --blue-800: #85B7EB;
+      --gray-100: #444441;
+      --gray-200: #5F5E5A;
+      --gray-600: #B4B2A9;
+    }
+  }
+
+  body {
+    font-family: "Georgia", "Times New Roman", serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    padding: 40px 24px 60px;
+    max-width: 780px;
+    margin: 0 auto;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .report-header { margin-bottom: 36px; }
+  .report-kicker {
+    font-family: "Courier New", monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 8px;
+  }
+  .report-title {
+    font-size: 26px;
+    font-weight: 700;
+    font-family: "Georgia", serif;
+    line-height: 1.2;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+  .report-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: "Courier New", monospace;
+  }
+  .report-meta span::before { content: "·"; margin-right: 6px; color: var(--text-hint); }
+  .report-meta span:first-child::before { content: ""; margin-right: 0; }
+
+  /* Stats row */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+  }
+  .stat-val {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-primary);
+  }
+  .stat-unit { font-size: 13px; font-weight: 400; margin-left: 2px; color: var(--text-secondary); }
+  .stat-label { font-size: 11px; color: var(--text-hint); margin-top: 5px; letter-spacing: 0.04em; }
 
   /* Transcript */
-  .transcript-box {
-    background:#fff; border:1px solid #e2e0d8;
-    border-radius:12px; padding:16px 20px; margin-bottom:28px;
+  .transcript-toggle {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    padding: 0;
+    margin-bottom: 32px;
+    overflow: hidden;
   }
-  .transcript-box summary {
-    cursor:pointer; font-size:13px; font-weight:600; color:#6b6a63;
+  .transcript-toggle summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 13px 18px;
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.06em;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    user-select: none;
   }
-  .transcript-text {
-    font-size:13px; line-height:1.8; color:#3d3d3a;
-    margin-top:12px; white-space:pre-wrap;
+  .transcript-toggle summary::marker { display: none; }
+  .transcript-toggle[open] summary { border-bottom: 0.5px solid var(--border); }
+  .transcript-body {
+    padding: 16px 18px;
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--text-secondary);
+    font-family: "Georgia", serif;
+    font-style: italic;
   }
 
-  /* Sections */
-  .section {
-    background:#fff; border-radius:14px;
-    padding:24px 28px; margin-bottom:20px;
-    border:1px solid #e2e0d8;
+  /* Section */
+  .rubric-section {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 26px;
+    margin-bottom: 18px;
+  }
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 14px;
+    border-bottom: 0.5px solid var(--border);
+  }
+  .section-num {
+    font-size: 11px;
+    font-family: "Courier New", monospace;
+    color: var(--text-hint);
+    letter-spacing: 0.08em;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+  }
+  .section-badge {
+    font-size: 11px;
+    font-family: "Courier New", monospace;
+    padding: 3px 9px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .badge-ok { background: var(--teal-50); color: var(--teal-600); }
+  .badge-watch { background: var(--amber-50); color: var(--amber-600); }
+  .badge-info { background: var(--blue-50); color: var(--blue-600); }
+
+  /* Vocab bar */
+  .vocab-bar-wrap { margin-bottom: 14px; }
+  .vocab-bar {
+    display: flex;
+    height: 14px;
+    border-radius: 4px;
+    overflow: hidden;
+    gap: 1px;
+    margin-bottom: 12px;
+  }
+  .vocab-seg { height: 100%; border-radius: 2px; }
+  .vocab-legend {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 20px;
+    font-size: 12px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 7px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .legend-name { color: var(--text-secondary); }
+  .legend-pct { margin-left: auto; font-family: "Courier New", monospace; color: var(--text-hint); }
+
+  .vocab-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; padding-top: 14px; border-top: 0.5px solid var(--border); }
+  .chip {
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 9px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: "Courier New", monospace;
+  }
+  .chip em { color: var(--text-hint); font-style: normal; }
+
+  /* Instruction phrases */
+  .phrase-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .phrase-label { font-size: 13px; width: 200px; flex-shrink: 0; color: var(--text-secondary); }
+  .phrase-track { flex: 1; background: var(--bg); border-radius: 3px; height: 8px; }
+  .phrase-fill { height: 100%; border-radius: 3px; background: var(--teal-600); }
+  .phrase-count {
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+    color: var(--text-hint);
+    width: 20px;
+    text-align: right;
+  }
+  .benchmark-note {
+    font-size: 11px;
+    color: var(--text-hint);
+    font-family: "Courier New", monospace;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--border);
   }
 
-  /* Badge */
-  .badge {
-    display:inline-block; background:#eef4fb; color:#185FA5;
-    border-radius:6px; padding:3px 10px; font-size:12px;
-    font-weight:600; margin-bottom:14px;
+  /* Emotion */
+  .emotion-wrap { display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap; }
+  .emotion-chart-area { flex-shrink: 0; }
+  .emotion-note {
+    flex: 1;
+    min-width: 200px;
+    background: var(--amber-50);
+    border-radius: 8px;
+    border-left: 2px solid var(--amber-600);
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--amber-800);
+    line-height: 1.6;
+    border-radius: 0 8px 8px 0;
   }
-  .flag { font-size:12px; color:#854F0B; margin-left:10px; }
+  .emotion-note strong { font-weight: 600; display: block; margin-bottom: 4px; }
 
-  /* Stacked bar */
-  .stack-bar {
-    display:flex; height:18px; border-radius:6px;
-    overflow:hidden; margin-bottom:10px;
+  /* Scaffolding findings */
+  .findings-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+  @media (max-width: 560px) { .findings-grid { grid-template-columns: 1fr; } }
+  .findings-col-label {
+    font-size: 10px;
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-hint);
+    margin-bottom: 8px;
   }
-  .stack-seg { height:100%; transition:width .3s; }
-
-  /* Legend */
-  .legend { display:flex; flex-wrap:wrap; gap:8px 16px; margin-bottom:14px; align-items:center; }
-  .legend-dot   { display:inline-block; width:10px; height:10px; border-radius:50%; }
-  .legend-label { font-size:12px; color:#3d3d3a; margin-left:4px; }
-  .legend-pct   { font-size:12px; color:#6b6a63; margin-left:4px; }
-
-  /* Chips */
-  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:8px; }
-  .chip  {
-    background:#f0f0eb; border-radius:6px;
-    padding:3px 9px; font-size:12px; color:#3d3d3a;
+  .finding {
+    padding: 11px 14px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 8px;
+    font-size: 13px;
   }
-  .chip em { color:#6b6a63; font-style:normal; }
+  .finding-strength { background: var(--teal-50); border-left: 2px solid var(--teal-600); }
+  .finding-growth { background: var(--amber-50); border-left: 2px solid var(--amber-600); }
+  .finding-point { font-weight: 600; margin-bottom: 4px; color: var(--text-primary); }
+  .finding-evidence { font-size: 12px; color: var(--text-secondary); font-style: italic; line-height: 1.5; }
 
-  /* Bar chart */
-  .bar-row   { display:flex; align-items:center; gap:10px; margin-bottom:7px; }
-  .bar-label { font-size:12px; width:180px; flex-shrink:0; color:#3d3d3a; }
-  .bar-track { flex:1; background:#f0f0eb; border-radius:4px; height:10px; }
-  .bar-fill  { height:100%; border-radius:4px; }
-  .fill-teal { background:#1D9E75; }
-  .bar-count { font-size:12px; color:#6b6a63; width:24px; text-align:right; }
+  .standout {
+    background: var(--blue-50);
+    border-radius: 0 8px 8px 0;
+    border-left: 2px solid var(--blue-600);
+    padding: 11px 14px;
+    font-size: 12px;
+    color: var(--blue-800);
+    line-height: 1.6;
+  }
+  .standout strong { font-weight: 600; }
 
-  /* Findings */
-  .two-col  { display:flex; gap:16px; margin-bottom:16px; }
-  .two-col > div { flex:1; }
-  .col-label {
-    font-size:11px; font-weight:600; color:#6b6a63;
-    text-transform:uppercase; letter-spacing:.05em; margin-bottom:10px;
+  /* Two-col subsection */
+  .subsection { margin-bottom: 20px; }
+  .subsection:last-child { margin-bottom: 0; }
+  .subsection-title {
+    font-size: 12px;
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.08em;
+    color: var(--text-hint);
+    margin-bottom: 12px;
+    text-transform: uppercase;
   }
-  .finding         { padding:10px 14px; border-radius:8px; margin-bottom:8px; font-size:13px; }
-  .strength        { background:#f0faf5; border-left:3px solid #1D9E75; }
-  .growth          { background:#fdf6ee; border-left:3px solid #BA7517; }
-  .finding-point   { font-weight:500; margin-bottom:4px; }
-  .finding-evidence { font-size:12px; }
-  .evidence      { color:#6b6a63; font-style:italic; }
-  .evidence-null { color:#aaa; font-style:italic; }
-  .summary-text  { font-size:14px; line-height:1.7; color:#3d3d3a; margin-bottom:18px; }
-  .model-tag     { font-size:12px; font-weight:400; color:#6b6a63; }
-  .standout      {
-    background:#eef4fb; border-radius:8px; padding:12px 16px;
-    font-size:13px; color:#185FA5; margin-top:16px;
-    border-left:3px solid #185FA5;
+  .divider { border: none; border-top: 0.5px solid var(--border); margin: 20px 0; }
+
+  /* Summary */
+  .summary-text {
+    font-size: 14px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-bottom: 16px;
   }
+
+  /* Speech rate indicator */
+  .rate-indicator { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+  .rate-bar-track { flex: 1; background: var(--bg); border-radius: 3px; height: 8px; position: relative; }
+  .rate-bar-fill { height: 100%; border-radius: 3px; background: var(--teal-600); width: 63%; }
+  .rate-marker {
+    position: absolute;
+    top: -3px;
+    left: 63%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 14px;
+    background: var(--teal-600);
+    border-radius: 1px;
+  }
+  .rate-range { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-hint); font-family: "Courier New", monospace; }
 </style>
 </head>
 <body>
-  <h1>Teaching Analysis Report</h1>
-  <p class="meta-line">/content/drive/MyDrive/Colab Notebooks/Copy of yuxin.mp4</p>
 
-  
-<div class="cards">
-  <div class="card">
-    <div class="card-val">1.1<span class="card-unit">min</span></div>
-    <div class="card-sub">Duration</div>
+<div class="report-header">
+  <h1 class="report-title">Teaching Practice Analysis Report</h1>
+</div>
+
+<div class="stats-row">
+  <div class="stat-card">
+    <div class="stat-val">1.1<span class="stat-unit">min</span></div>
+    <div class="stat-label">Duration</div>
   </div>
-  <div class="card">
-    <div class="card-val">171</div>
-    <div class="card-sub">Total words</div>
+  <div class="stat-card">
+    <div class="stat-val">171</div>
+    <div class="stat-label">Total words</div>
   </div>
-  <div class="card">
-    <div class="card-val">153.1<span class="card-unit">wpm</span></div>
-    <div class="card-sub">Speech rate</div>
+  <div class="stat-card">
+    <div class="stat-val">153<span class="stat-unit">wpm</span></div>
+    <div class="stat-label">Speech rate</div>
   </div>
 </div>
-<details class="transcript-box">
-  <summary>📄 View transcript</summary>
-  <p class="transcript-text">Hi, class. Welcome to our Community Impact Program again. And today is our week six. We're going to talk about lesson two. While we're still waiting for more people to join us, why don't we start with our agenda? We'll first review what we just learned from yesterday. Since I was not here, I'd like to have someone in the class to help me review what we learned. And the second thing we're going to go over is about the pronunciation. The concept we'll learn is called syllable. And I hope you will still remember that. And later, we will talk more about the grammar concepts. Entitled with Strympic, Figure, and Biggest. And at very end of this class today, we are going to have a good discussion. All right, why don't we start with these two tables? I will give you two minutes to read this table. And later, let's discuss as a whole class. And tell me, would you notice about this two groups? And how are they different?</p>
+
+<details class="transcript-toggle">
+  <summary>▸ &nbsp;TRANSCRIPT</summary>
+  <p class="transcript-body">Hi, class. Welcome to our Community Impact Program again. And today is our week six. We're going to talk about lesson two. While we're still waiting for more people to join us, why don't we start with our agenda? We'll first review what we just learned from yesterday. Since I was not here, I'd like to have someone in the class to help me review what we learned. And the second thing we're going to go over is about the pronunciation. The concept we'll learn is called syllable. And I hope you will still remember that. And later, we will talk more about the grammar concepts. Entitled with Strympic, Figure, and Biggest. And at very end of this class today, we are going to have a good discussion. All right, why don't we start with these two tables? I will give you two minutes to read this table. And later, let's discuss as a whole class. And tell me, would you notice about this two groups? And how are they different?</p>
 </details>
 
-  
-<div class="section">
-  <h2>① Vocabulary level</h2>
-  <div class="badge">Suitable for B1/B2</div>
-  <div class="stack-bar"><div class="stack-seg" style="width:12.2%;background:#00BCD4" title="A1/A2  (basic): 12.2%"></div><div class="stack-seg" style="width:62.2%;background:#4CAF50" title="B1/B2  (intermediate): 62.2%"></div><div class="stack-seg" style="width:22.0%;background:#FDD835" title="C1     (advanced): 22.0%"></div><div class="stack-seg" style="width:3.7%;background:#FBC02D" title="C2+    (very advanced): 3.7%"></div></div>
-  <div class="legend"><span class="legend-dot" style="background:#00BCD4"></span><span class="legend-label">A1/A2  (basic)</span><span class="legend-pct">12.2%</span><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-label">B1/B2  (intermediate)</span><span class="legend-pct">62.2%</span><span class="legend-dot" style="background:#FDD835"></span><span class="legend-label">C1     (advanced)</span><span class="legend-pct">22.0%</span><span class="legend-dot" style="background:#FBC02D"></span><span class="legend-label">C2+    (very advanced)</span><span class="legend-pct">3.7%</span></div>
-  <div class="chips"><span class="chip">syllable <em>×1</em></span><span class="chip">pronunciation <em>×1</em></span><span class="chip">strympic <em>×1</em></span></div>
-</div>
+<!-- RUBRIC 1: COMPREHENSIBILITY -->
+<div class="rubric-section">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <span class="section-title">Comprehensibility</span>
+    <span class="section-badge badge-ok">Suitable for B1/B2</span>
+  </div>
 
-  
-<div class="section">
-  <h2>② Instruction phrases</h2>
-  <p class="meta-line">
-    4 total &nbsp;·&nbsp;
-    3.58 per min &nbsp;·&nbsp;
-    <span class="note">Benchmark: ~2–4/min</span>
-  </p>
-  
-    <div class="bar-row">
-      <span class="bar-label">Let's…</span>
-      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
-      <span class="bar-count">1</span>
+  <div class="subsection">
+    <p class="subsection-title">Vocabulary level</p>
+    <div class="vocab-bar-wrap">
+      <div class="vocab-bar">
+        <div class="vocab-seg" style="width:12.2%;background:#00BCD4"></div>
+        <div class="vocab-seg" style="width:62.2%;background:#4CAF50"></div>
+        <div class="vocab-seg" style="width:22.0%;background:#FDD835"></div>
+        <div class="vocab-seg" style="width:3.7%;background:#E24B4A"></div>
+      </div>
+      <div class="vocab-legend">
+        <div class="legend-item"><span class="legend-dot" style="background:#00BCD4"></span><span class="legend-name">A1/A2 basic</span><span class="legend-pct">12%</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-name">B1/B2 intermediate</span><span class="legend-pct">62%</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#FDD835"></span><span class="legend-name">C1 advanced</span><span class="legend-pct">22%</span></div>
+        <div class="legend-item"><span class="legend-dot" style="background:#E24B4A"></span><span class="legend-name">C2+ very advanced</span><span class="legend-pct">4%</span></div>
+      </div>
     </div>
-    <div class="bar-row">
-      <span class="bar-label">First…</span>
-      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
-      <span class="bar-count">1</span>
+    <div class="vocab-chips">
+      <span class="chip">syllable <em>×1</em></span>
+      <span class="chip">pronunciation <em>×1</em></span>
+      <span class="chip">strympic <em>×1</em></span>
     </div>
-    <div class="bar-row">
-      <span class="bar-label">Second(ly)…</span>
-      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
-      <span class="bar-count">1</span>
-    </div>
-    <div class="bar-row">
-      <span class="bar-label">Remember to/that…</span>
-      <div class="bar-track"><div class="bar-fill fill-teal" style="width:100.0%"></div></div>
-      <span class="bar-count">1</span>
-    </div>
-</div>
+  </div>
 
-  
-<div class="section">
-  <h2>③ Teacher emotion (DeepFace)</h2>
-  <div style="display:flex;align-items:center;gap:32px;flex-wrap:wrap">
-    <svg width="240" height="240" viewBox="0 0 240 240"><path d="M120,120 L120.0,20.0 A100,100 0 1,1 52.0,193.3 Z" fill="#5C6BC0" /><path d="M120,120 L52.0,193.3 A100,100 0 0,1 49.7,48.8 Z" fill="#90A4AE" /><path d="M120,120 L49.7,48.8 A100,100 0 0,1 77.4,29.5 Z" fill="#AB47BC" /><path d="M120,120 L77.4,29.5 A100,100 0 0,1 109.3,20.6 Z" fill="#EF5350" /><path d="M120,120 L109.3,20.6 A100,100 0 0,1 118.1,20.0 Z" fill="#4CAF50" /><path d="M120,120 L118.1,20.0 A100,100 0 0,1 119.4,20.0 Z" fill="#FDD835" /><path d="M120,120 L119.4,20.0 A100,100 0 0,1 120.0,20.0 Z" fill="#8D6E63" /></svg>
-    <div class="legend"><span class="legend-dot" style="background:#5C6BC0"></span><span class="legend-label">sad</span><span class="legend-pct">61.9%</span><span class="legend-dot" style="background:#90A4AE"></span><span class="legend-label">neutral</span><span class="legend-pct">25.7%</span><span class="legend-dot" style="background:#AB47BC"></span><span class="legend-label">fear</span><span class="legend-pct">5.4%</span><span class="legend-dot" style="background:#EF5350"></span><span class="legend-label">angry</span><span class="legend-pct">5.3%</span><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-label">happy</span><span class="legend-pct">1.4%</span><span class="legend-dot" style="background:#FDD835"></span><span class="legend-label">surprise</span><span class="legend-pct">0.2%</span><span class="legend-dot" style="background:#8D6E63"></span><span class="legend-label">disgust</span><span class="legend-pct">0.1%</span></div>
+  <hr class="divider">
+
+  <div class="subsection">
+    <p class="subsection-title">Speech rate</p>
+    <div class="rate-indicator">
+      <span style="font-size:13px;color:var(--text-secondary);width:60px;font-family:'Courier New',monospace;">153 wpm</span>
+      <div class="rate-bar-track">
+        <div class="rate-bar-fill"></div>
+        <div class="rate-marker"></div>
+      </div>
+    </div>
+    <div class="rate-range"><span>100</span><span>Ideal: 120–160 wpm</span><span>200+</span></div>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <p class="subsection-title">Lesson agenda coverage</p>
+    <div class="finding finding-strength">
+      <div class="finding-point">Agenda stated clearly at opening</div>
+      <div class="finding-evidence">Review → pronunciation (syllable) → grammar concepts → whole-class discussion</div>
+    </div>
+    <div class="finding finding-growth">
+      <div class="finding-point">Grammar terms may cause confusion</div>
+      <div class="finding-evidence">"Strympic, Figure, and Biggest" — unclear if these are intentional topic names or transcription errors. Worth verifying before next session.</div>
+    </div>
   </div>
 </div>
 
-  
-<div class="section">
-  <h2>④ Scaffolding quality &nbsp;<span class="model-tag">Qwen2.5-7B</span></h2>
-  <p class="summary-text">The teacher introduces the topic logically but lacks clear sequencing and worked examples.</p>
-  <div class="two-col">
-    <div>
-      <div class="col-label">Strengths</div>
-      <div class="finding strength">
-        <div class="finding-point">✓ Introduction of the topic</div>
-        <div class="finding-evidence"><span class="evidence">"Okay, this is today's topic. Learning for life."</span></div>
+<!-- RUBRIC 2: INTERACTIONAL COMPETENCY -->
+<div class="rubric-section">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <span class="section-title">Interactional Competency</span>
+    <span class="section-badge badge-watch">Needs attention</span>
+  </div>
+
+  <div class="subsection">
+    <p class="subsection-title">Affective awareness — teacher-detected emotion</p>
+    <div class="emotion-wrap">
+      <div class="emotion-chart-area">
+        <svg width="180" height="180" viewBox="0 0 180 180" role="img" aria-label="Pie chart showing teacher facial expression: 62% sad, 26% neutral, rest minor">
+          <title>Teacher emotion distribution</title>
+          <path d="M90,90 L90.0,15.0 A75,75 0 1,1 39.0,145.0 Z" fill="#5C6BC0" />
+          <path d="M90,90 L39.0,145.0 A75,75 0 0,1 37.3,36.6 Z" fill="#90A4AE" />
+          <path d="M90,90 L37.3,36.6 A75,75 0 0,1 58.0,22.1 Z" fill="#AB47BC" />
+          <path d="M90,90 L58.0,22.1 A75,75 0 0,1 82.0,15.5 Z" fill="#EF5350" />
+          <path d="M90,90 L82.0,15.5 A75,75 0 0,1 90.0,15.0 Z" fill="#4CAF50" />
+          <circle cx="90" cy="90" r="28" fill="var(--surface)" />
+          <text x="90" y="86" text-anchor="middle" font-size="14" font-weight="700" fill="var(--text-primary)" font-family="Georgia,serif">62%</text>
+          <text x="90" y="100" text-anchor="middle" font-size="10" fill="var(--text-secondary)" font-family="Courier New,monospace">sad</text>
+        </svg>
+        <div style="display:flex;flex-wrap:wrap;gap:5px 12px;margin-top:8px;max-width:180px;">
+          <div class="legend-item"><span class="legend-dot" style="background:#5C6BC0"></span><span class="legend-name" style="font-size:11px;">sad 62%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#90A4AE"></span><span class="legend-name" style="font-size:11px;">neutral 26%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#AB47BC"></span><span class="legend-name" style="font-size:11px;">fear 5%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#EF5350"></span><span class="legend-name" style="font-size:11px;">angry 5%</span></div>
+          <div class="legend-item"><span class="legend-dot" style="background:#4CAF50"></span><span class="legend-name" style="font-size:11px;">happy 1%</span></div>
+        </div>
       </div>
-      <div class="finding strength">
-        <div class="finding-point">✓ Setting time limit</div>
-        <div class="finding-evidence"><span class="evidence">"Two minutes, let's start."</span></div>
-      </div>
-    </div>
-    <div>
-      <div class="col-label">Areas for growth</div>
-      <div class="finding growth">
-        <div class="finding-point">△ Lack of sequencing</div>
-        <div class="finding-evidence"><span class="evidence">"The introduction of predicting the main idea and the logic of the passage without prior knowledge connection."</span></div>
-      </div>
-      <div class="finding growth">
-        <div class="finding-point">△ Need for modeled examples</div>
-        <div class="finding-evidence"><span class="evidence">"No worked examples or modeling of how to approach the task was observed."</span></div>
+      <div class="emotion-note">
+        <strong>Interpretive caution</strong>
+        DeepFace classifies resting facial expressions — "sad" here likely reflects a neutral teaching face, not actual distress. The key question for <em>supportiveness</em> is whether students experience the teacher as warm and approachable, which requires live observation or student feedback.
+        <br><br>
+        <strong style="margin-top:8px;">What to look for:</strong> correction tone, wait time after questions, response to student errors.
       </div>
     </div>
   </div>
-  <div class="standout">⭐ Standout moment — The teacher setting a two-minute timer for the activity could help manage time effectively.</div>
+
 </div>
 
+<!-- RUBRIC 3: CONTENT -->
+<div class="rubric-section">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <span class="section-title">Content</span>
+    <span class="section-badge badge-info">Within benchmark</span>
+  </div>
+
+  <div class="subsection">
+    <p class="subsection-title">Instruction phrases — 4 total · 3.6 per min</p>
+    <div class="phrase-row"><span class="phrase-label">Let's…</span><div class="phrase-track"><div class="phrase-fill" style="width:100%"></div></div><span class="phrase-count">1</span></div>
+    <div class="phrase-row"><span class="phrase-label">First…</span><div class="phrase-track"><div class="phrase-fill" style="width:100%"></div></div><span class="phrase-count">1</span></div>
+    <div class="phrase-row"><span class="phrase-label">Second(ly)…</span><div class="phrase-track"><div class="phrase-fill" style="width:100%"></div></div><span class="phrase-count">1</span></div>
+    <div class="phrase-row"><span class="phrase-label">Remember to/that…</span><div class="phrase-track"><div class="phrase-fill" style="width:100%"></div></div><span class="phrase-count">1</span></div>
+    <p class="benchmark-note">Benchmark: ~2–4 instruction phrases per min &nbsp;·&nbsp; This session: 3.6/min ✓</p>
+  </div>
+
+  <hr class="divider">
+
+  <div class="subsection">
+    <p class="subsection-title">Scaffolding quality</p>
+    <p class="summary-text">The teacher introduces the topic logically but lacks clear sequencing and worked examples. Scaffolding is present but static — no observable adjustment based on learner response.</p>
+
+    <div class="findings-grid">
+      <div>
+        <p class="findings-col-label">Strengths</p>
+        <div class="finding finding-strength">
+          <div class="finding-point">Introduction of topic</div>
+          <div class="finding-evidence">"Okay, this is today's topic. Learning for life."</div>
+        </div>
+        <div class="finding finding-strength">
+          <div class="finding-point">Time boundary set</div>
+          <div class="finding-evidence">"I will give you two minutes to read this table."</div>
+        </div>
+      </div>
+      <div>
+        <p class="findings-col-label">Areas for growth</p>
+        <div class="finding finding-growth">
+          <div class="finding-point">Lack of sequencing</div>
+          <div class="finding-evidence">Topic introduced without prior knowledge activation or connection to previous lesson.</div>
+        </div>
+        <div class="finding finding-growth">
+          <div class="finding-point">No modelled examples</div>
+          <div class="finding-evidence">Task launched without a worked example or think-aloud demonstration.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="standout">
+      <strong>Standout moment —</strong> Setting a two-minute time limit for the table activity provides a clear boundary and helps learners pace themselves. This is a simple, effective scaffolding move.
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
